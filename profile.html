@@ -7,405 +7,80 @@
   <meta name="description" content="View a user profile, their posted wants, and their support signals.">
   <style>
     :root{
-      --bg:#f6f4ee;
-      --surface:#ffffff;
-      --surface-2:#fcfbf7;
-      --text:#131313;
-      --muted:#66645f;
-      --line:#e9e4d8;
-      --accent:#111111;
-      --accent-soft:#f1eee4;
-      --chip:#f5f2ea;
-      --shadow:0 16px 44px rgba(15,15,15,.06);
-      --shadow-soft:0 8px 22px rgba(15,15,15,.04);
-      --radius-xl:30px;
-      --radius-lg:22px;
-      --radius-md:16px;
-      --max:1180px;
+      --bg:#f6f4ee;--surface:#ffffff;--surface-2:#fcfbf7;--text:#131313;--muted:#66645f;
+      --line:#e9e4d8;--accent:#111111;--accent-soft:#f1eee4;--chip:#f5f2ea;
+      --shadow:0 16px 44px rgba(15,15,15,.06);--shadow-soft:0 8px 22px rgba(15,15,15,.04);
+      --radius-xl:30px;--radius-lg:22px;--radius-md:16px;--max:1180px;
     }
-
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{
-      margin:0;
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,.75), transparent 28%),
-        linear-gradient(180deg, #f8f6f1 0%, #f6f4ee 100%);
-      color:var(--text);
-      line-height:1.5;
+      margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top left, rgba(255,255,255,.75), transparent 28%), linear-gradient(180deg, #f8f6f1 0%, #f6f4ee 100%);
+      color:var(--text);line-height:1.5;
     }
-
     a{color:inherit;text-decoration:none}
     button,input{font:inherit}
-
-    .container{
-      width:min(var(--max), calc(100% - 32px));
-      margin:0 auto;
+    .container{width:min(var(--max), calc(100% - 32px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);background:rgba(246,244,238,.82);border-bottom:1px solid rgba(233,228,216,.92)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0;gap:20px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.03em;font-size:1.05rem}
+    .logo-mark{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;background:var(--text);color:#fff;font-size:.92rem;box-shadow:var(--shadow-soft)}
+    .nav-links{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.94rem;flex-wrap:wrap}
+    .nav-link{padding:10px 14px;border-radius:999px;transition:background .18s ease,color .18s ease}
+    .nav-link:hover,.nav-link.active{background:rgba(255,255,255,.72);color:var(--text)}
+    .nav-actions{display:flex;align-items:center;gap:10px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:999px;padding:12px 18px;font-size:.95rem;cursor:pointer;transition:transform .18s ease, background .18s ease, box-shadow .18s ease}
+    .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
+    .btn-primary{background:var(--text);color:#fff}
+    .btn-secondary{background:#fff;color:var(--text);border:1px solid var(--line)}
+    .hero{padding:46px 0 18px}
+    .hero-shell,.profile-main,.profile-side,.sidebar-box,.want-card{
+      background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow);
     }
-
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:30;
-      backdrop-filter:blur(14px);
-      background:rgba(246,244,238,.82);
-      border-bottom:1px solid rgba(233,228,216,.92);
-    }
-
-    .nav{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:16px 0;
-      gap:20px;
-    }
-
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:700;
-      letter-spacing:-.03em;
-      font-size:1.05rem;
-    }
-
-    .logo-mark{
-      width:36px;
-      height:36px;
-      display:grid;
-      place-items:center;
-      border-radius:12px;
-      background:var(--text);
-      color:#fff;
-      font-size:.92rem;
-      box-shadow:var(--shadow-soft);
-    }
-
-    .nav-links{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      color:var(--muted);
-      font-size:.94rem;
-      flex-wrap:wrap;
-    }
-
-    .nav-link{
-      padding:10px 14px;
-      border-radius:999px;
-      transition:background .18s ease,color .18s ease;
-    }
-
-    .nav-link:hover,
-    .nav-link.active{
-      background:rgba(255,255,255,.72);
-      color:var(--text);
-    }
-
-    .nav-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .btn{
-      border:none;
-      border-radius:999px;
-      padding:12px 18px;
-      font-size:.95rem;
-      cursor:pointer;
-      transition:transform .18s ease, background .18s ease, box-shadow .18s ease;
-    }
-
-    .btn:hover{
-      transform:translateY(-1px);
-      box-shadow:var(--shadow-soft);
-    }
-
-    .btn-primary{
-      background:var(--text);
-      color:#fff;
-    }
-
-    .btn-secondary{
-      background:#fff;
-      color:var(--text);
-      border:1px solid var(--line);
-    }
-
-    .hero{
-      padding:46px 0 18px;
-    }
-
-    .hero-shell,
-    .profile-main,
-    .profile-side,
-    .sidebar-box,
-    .want-card{
-      background:rgba(255,255,255,.9);
-      border:1px solid var(--line);
-      border-radius:var(--radius-xl);
-      box-shadow:var(--shadow);
-    }
-
-    .hero-shell{
-      padding:28px 30px;
-    }
-
-    .eyebrow,
-    .section-line,
-    .tag,
-    .small-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border-radius:999px;
-    }
-
-    .eyebrow,
-    .section-line{
-      background:var(--accent-soft);
-      color:#494949;
-      padding:8px 12px;
-      font-size:.84rem;
-    }
-
-    .layout{
-      display:grid;
-      grid-template-columns:.92fr 1.08fr;
-      gap:18px;
-      padding:18px 0 48px;
-      align-items:start;
-    }
-
-    .profile-main,
-    .profile-side{
-      padding:24px;
-    }
-
-    .sidebar-sticky{
-      position:sticky;
-      top:94px;
-      display:grid;
-      gap:16px;
-    }
-
+    .hero-shell,.profile-main,.profile-side{padding:24px}
+    .eyebrow,.section-line,.tag,.small-pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px}
+    .eyebrow,.section-line{background:var(--accent-soft);color:#494949;padding:8px 12px;font-size:.84rem}
+    .layout{display:grid;grid-template-columns:.92fr 1.08fr;gap:18px;padding:18px 0 48px;align-items:start}
+    .sidebar-sticky{position:sticky;top:94px;display:grid;gap:16px}
     .profile-avatar{
-      width:82px;
-      height:82px;
-      border-radius:24px;
-      background:linear-gradient(135deg, #f1eee4 0%, #e5dfd0 100%);
-      display:grid;
-      place-items:center;
-      font-size:1.45rem;
-      font-weight:700;
-      margin:0 auto 14px;
-      color:var(--text);
-      border:1px solid var(--line);
+      width:82px;height:82px;border-radius:24px;background:linear-gradient(135deg, #f1eee4 0%, #e5dfd0 100%);
+      display:grid;place-items:center;font-size:1.45rem;font-weight:700;margin:0 auto 14px;color:var(--text);border:1px solid var(--line);
     }
-
-    .center{
-      text-align:center;
-    }
-
-    .profile-name{
-      margin:0 0 4px;
-      font-size:1.35rem;
-      letter-spacing:-.03em;
-    }
-
-    .profile-role,
-    .muted,
-    .want-desc{
-      color:var(--muted);
-    }
-
-    .meta-row,
-    .stats,
-    .card-actions,
-    .tag-cloud,
-    .inline-row,
-    .section-head{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .tag,
-    .small-pill{
-      padding:7px 11px;
-      border:1px solid var(--line);
-      background:var(--accent-soft);
-      font-size:.82rem;
-      color:#444;
-    }
-
-    .small-pill{
-      background:#fff;
-    }
-
-    .sidebar-box{
-      padding:18px;
-      box-shadow:var(--shadow-soft);
-    }
-
-    .sidebar-title,
-    .section-title{
-      margin:0 0 10px;
-      font-size:1.08rem;
-      letter-spacing:-.03em;
-    }
-
-    .section-line{
-      margin-bottom:14px;
-    }
-
-    .section-head{
-      justify-content:space-between;
-      align-items:end;
-      margin-bottom:18px;
-    }
-
-    .page-title{
-      margin:0;
-      font-size:clamp(2rem, 4vw, 3rem);
-      line-height:1.04;
-      letter-spacing:-.045em;
-    }
-
-    .page-subtitle{
-      margin:8px 0 0;
-      color:var(--muted);
-      font-size:1rem;
-    }
-
-    .tabs{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .tab{
-      padding:10px 13px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#fff;
-      font-size:.9rem;
-      cursor:pointer;
-    }
-
-    .tab.active{
-      background:var(--text);
-      color:#fff;
-      border-color:var(--text);
-    }
-
-    .want-list{
-      display:grid;
-      gap:16px;
-    }
-
-    .want-card{
-      padding:22px;
-      box-shadow:var(--shadow-soft);
-      transition:transform .18s ease, box-shadow .18s ease;
-    }
-
-    .want-card:hover{
-      transform:translateY(-2px);
-      box-shadow:var(--shadow);
-    }
-
-    .want-title{
-      margin:14px 0 8px;
-      font-size:1.3rem;
-      line-height:1.15;
-      letter-spacing:-.03em;
-    }
-
-    .want-desc{
-      margin:0;
-      font-size:.98rem;
-    }
-
-    .stats{
-      margin-top:14px;
-      color:var(--muted);
-      font-size:.9rem;
-    }
-
-    .card-actions{
-      margin-top:16px;
-    }
-
-    .card-btn{
-      padding:10px 13px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#fff;
-      font-size:.9rem;
-      cursor:pointer;
-    }
-
-    .card-btn.primary{
-      background:var(--text);
-      color:#fff;
-      border-color:var(--text);
-    }
-
-    footer{
-      border-top:1px solid var(--line);
-      padding:22px 0 42px;
-      color:var(--muted);
-    }
-
-    .footer-row{
-      display:flex;
-      justify-content:space-between;
-      gap:16px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .footer-links{
-      display:flex;
-      gap:18px;
-      flex-wrap:wrap;
-    }
-
-    @media (max-width: 980px){
-      .layout{
-        grid-template-columns:1fr;
-      }
-      .sidebar-sticky{
-        position:static;
-      }
-    }
-
-    @media (max-width: 760px){
+    .center{text-align:center}
+    .profile-name{margin:0 0 4px;font-size:1.35rem;letter-spacing:-.03em}
+    .profile-role,.muted,.want-desc{color:var(--muted)}
+    .meta-row,.stats,.card-actions,.tag-cloud,.inline-row,.section-head{display:flex;gap:12px;flex-wrap:wrap}
+    .tag,.small-pill{padding:7px 11px;border:1px solid var(--line);background:var(--accent-soft);font-size:.82rem;color:#444}
+    .small-pill{background:#fff}
+    .sidebar-box{padding:18px;box-shadow:var(--shadow-soft)}
+    .sidebar-title,.section-title{margin:0 0 10px;font-size:1.08rem;letter-spacing:-.03em}
+    .section-line{margin-bottom:14px}
+    .section-head{justify-content:space-between;align-items:end;margin-bottom:18px}
+    .page-title{margin:0;font-size:clamp(2rem, 4vw, 3rem);line-height:1.04;letter-spacing:-.045em}
+    .page-subtitle{margin:8px 0 0;color:var(--muted);font-size:1rem}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .tab{padding:10px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:.9rem;cursor:pointer}
+    .tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+    .want-list{display:grid;gap:16px}
+    .want-card{padding:22px;box-shadow:var(--shadow-soft);transition:transform .18s ease, box-shadow .18s ease}
+    .want-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+    .want-title{margin:14px 0 8px;font-size:1.3rem;line-height:1.15;letter-spacing:-.03em}
+    .want-desc{margin:0;font-size:.98rem}
+    .stats{margin-top:14px;color:var(--muted);font-size:.9rem}
+    .card-actions{margin-top:16px}
+    .card-btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:.9rem;cursor:pointer}
+    .card-btn.primary{background:var(--text);color:#fff;border-color:var(--text)}
+    footer{border-top:1px solid var(--line);padding:22px 0 42px;color:var(--muted)}
+    .footer-row{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+    .footer-links{display:flex;gap:18px;flex-wrap:wrap}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.sidebar-sticky{position:static}}
+    @media (max-width:760px){
       .nav{flex-wrap:wrap}
-      .nav-links{
-        width:100%;
-        order:3;
-        overflow-x:auto;
-        padding-bottom:2px;
-      }
-      .hero-shell,
-      .profile-main,
-      .profile-side,
-      .sidebar-box,
-      .want-card{
-        border-radius:22px;
-      }
-      .hero-shell,
-      .profile-main,
-      .profile-side{
-        padding:20px;
-      }
-      .section-head{
-        align-items:start;
-      }
+      .nav-links{width:100%;order:3;overflow-x:auto;padding-bottom:2px}
+      .hero-shell,.profile-main,.profile-side,.sidebar-box,.want-card{border-radius:22px}
+      .hero-shell,.profile-main,.profile-side{padding:20px}
+      .section-head{align-items:start}
     }
   </style>
 </head>
@@ -421,12 +96,13 @@
         <a class="nav-link" href="index.html">Home</a>
         <a class="nav-link" href="explore.html">Explore</a>
         <a class="nav-link" href="post.html">Post</a>
+        <a class="nav-link" href="detail.html">Detail</a>
         <a class="nav-link active" href="profile.html">Profile</a>
       </div>
 
       <div class="nav-actions">
-        <button class="btn btn-secondary">Log in</button>
-        <button class="btn btn-primary">Post a want</button>
+        <a href="profile.html" class="btn btn-secondary">Log in</a>
+        <a href="post.html" class="btn btn-primary">Post a want</a>
       </div>
     </div>
   </div>
@@ -516,9 +192,7 @@
               <span class="small-pill">248 supporters</span>
             </div>
             <h3 class="want-title">I want a quiet budgeting app for people who get overwhelmed by finance tools</h3>
-            <p class="want-desc">
-              A calmer money tool for normal people who want clarity without shame, noise, or finance-expert complexity.
-            </p>
+            <p class="want-desc">A calmer money tool for normal people who want clarity without shame, noise, or finance-expert complexity.</p>
             <div class="stats">
               <span>31 comments</span>
               <span>89 saves</span>
@@ -526,9 +200,9 @@
               <span>Posted 3 hours ago</span>
             </div>
             <div class="card-actions">
-              <button class="card-btn primary">Open detail</button>
-              <button class="card-btn">Edit</button>
-              <button class="card-btn">Share</button>
+              <a href="detail.html" class="card-btn primary">Open detail</a>
+              <a href="post.html" class="card-btn">Edit</a>
+              <a href="detail.html" class="card-btn">Share</a>
             </div>
           </article>
 
@@ -539,9 +213,7 @@
               <span class="small-pill">143 supporters</span>
             </div>
             <h3 class="want-title">I want a task app that helps people restart after falling behind</h3>
-            <p class="want-desc">
-              Not another streak-based guilt machine. Something that says “start again here,” without pressure.
-            </p>
+            <p class="want-desc">Not another streak-based guilt machine. Something that says “start again here,” without pressure.</p>
             <div class="stats">
               <span>22 comments</span>
               <span>53 saves</span>
@@ -549,9 +221,9 @@
               <span>Posted yesterday</span>
             </div>
             <div class="card-actions">
-              <button class="card-btn primary">Open detail</button>
-              <button class="card-btn">Edit</button>
-              <button class="card-btn">Share</button>
+              <a href="detail.html" class="card-btn primary">Open detail</a>
+              <a href="post.html" class="card-btn">Edit</a>
+              <a href="detail.html" class="card-btn">Share</a>
             </div>
           </article>
 
@@ -562,9 +234,7 @@
               <span class="small-pill">88 supporters</span>
             </div>
             <h3 class="want-title">I want more consumer apps that feel emotionally calm instead of addictive</h3>
-            <p class="want-desc">
-              So many digital products are built to overstimulate. I want experiences that reduce noise instead of adding more.
-            </p>
+            <p class="want-desc">So many digital products are built to overstimulate. I want experiences that reduce noise instead of adding more.</p>
             <div class="stats">
               <span>17 comments</span>
               <span>40 saves</span>
@@ -572,9 +242,9 @@
               <span>Posted 2 days ago</span>
             </div>
             <div class="card-actions">
-              <button class="card-btn primary">Open detail</button>
-              <button class="card-btn">Edit</button>
-              <button class="card-btn">Share</button>
+              <a href="detail.html" class="card-btn primary">Open detail</a>
+              <a href="post.html" class="card-btn">Edit</a>
+              <a href="detail.html" class="card-btn">Share</a>
             </div>
           </article>
         </div>
@@ -586,10 +256,10 @@
     <div class="container footer-row">
       <div>© 2026 What I Want</div>
       <div class="footer-links">
-        <a href="#">About</a>
-        <a href="#">Terms</a>
-        <a href="#">Privacy</a>
-        <a href="#">Contact</a>
+        <a href="index.html">About</a>
+        <a href="index.html">Terms</a>
+        <a href="index.html">Privacy</a>
+        <a href="index.html">Contact</a>
       </div>
     </div>
   </footer>
