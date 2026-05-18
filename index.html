@@ -4,37 +4,833 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>What I Want</title>
+  <meta name="description" content="A place where people say what they really want. Post a need, idea, frustration, or wish.">
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
+    :root{
+      --bg:#f6f4ee;
+      --surface:#ffffff;
+      --surface-2:#fcfbf7;
+      --text:#131313;
+      --muted:#66645f;
+      --line:#e9e4d8;
+      --accent:#111111;
+      --accent-soft:#f1eee4;
+      --chip:#f5f2ea;
+      --shadow:0 16px 44px rgba(15,15,15,.06);
+      --shadow-soft:0 8px 22px rgba(15,15,15,.04);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --max:1180px;
     }
-    .box {
-      max-width: 700px;
-      padding: 40px 20px;
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.75), transparent 28%),
+        linear-gradient(180deg, #f8f6f1 0%, #f6f4ee 100%);
+      color:var(--text);
+      line-height:1.5;
     }
-    h1 {
-      font-size: 48px;
-      margin-bottom: 16px;
+
+    a{color:inherit;text-decoration:none}
+    button,input,textarea{font:inherit}
+
+    .container{
+      width:min(var(--max), calc(100% - 32px));
+      margin:0 auto;
     }
-    p {
-      font-size: 18px;
-      color: #ccc;
-      line-height: 1.6;
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:30;
+      backdrop-filter:blur(14px);
+      background:rgba(246,244,238,.82);
+      border-bottom:1px solid rgba(233,228,216,.92);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 0;
+      gap:20px;
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      letter-spacing:-.03em;
+      font-size:1.05rem;
+    }
+
+    .logo-mark{
+      width:36px;
+      height:36px;
+      display:grid;
+      place-items:center;
+      border-radius:12px;
+      background:var(--text);
+      color:#fff;
+      font-size:.92rem;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:var(--muted);
+      font-size:.94rem;
+      flex-wrap:wrap;
+    }
+
+    .nav-link{
+      padding:10px 14px;
+      border-radius:999px;
+      transition:background .18s ease,color .18s ease;
+    }
+
+    .nav-link:hover{
+      background:rgba(255,255,255,.72);
+      color:var(--text);
+    }
+
+    .nav-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:12px 18px;
+      font-size:.95rem;
+      cursor:pointer;
+      transition:transform .18s ease,opacity .18s ease,background .18s ease,box-shadow .18s ease;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .btn-primary{
+      background:var(--text);
+      color:#fff;
+    }
+
+    .btn-secondary{
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    .hero{
+      padding:72px 0 44px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:24px;
+      align-items:stretch;
+    }
+
+    .hero-main,
+    .hero-side,
+    .section-card,
+    .want-card{
+      background:rgba(255,255,255,.86);
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+    }
+
+    .hero-main{
+      padding:44px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-main::after{
+      content:"";
+      position:absolute;
+      width:240px;
+      height:240px;
+      right:-60px;
+      top:-70px;
+      background:radial-gradient(circle, rgba(241,238,228,.9) 0%, rgba(241,238,228,0) 70%);
+      pointer-events:none;
+    }
+
+    .eyebrow,
+    .hero-badge,
+    .section-anchor{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:var(--accent-soft);
+      color:#494949;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.84rem;
+    }
+
+    .hero-badge{margin-left:8px}
+
+    h1{
+      margin:18px 0 0;
+      font-size:clamp(2.7rem, 6vw, 4.9rem);
+      line-height:.94;
+      letter-spacing:-.055em;
+      max-width:10ch;
+    }
+
+    .hero-text{
+      margin:18px 0 24px;
+      font-size:1.08rem;
+      color:var(--muted);
+      max-width:58ch;
+    }
+
+    .hero-stats{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:24px;
+    }
+
+    .hero-stat-pill{
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.78);
+      border:1px solid var(--line);
+      font-size:.9rem;
+      color:#4c4a45;
+    }
+
+    .input-panel{
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      position:relative;
+      z-index:1;
+    }
+
+    .input-label{
+      font-size:.9rem;
+      color:var(--muted);
+      margin-bottom:10px;
+      display:block;
+    }
+
+    .want-input{
+      width:100%;
+      min-height:132px;
+      border:none;
+      outline:none;
+      resize:vertical;
+      background:transparent;
+      color:var(--text);
+      padding:0;
+      font-size:1.08rem;
+    }
+
+    .input-footer,
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .helper-text,
+    .muted{
+      color:var(--muted);
+    }
+
+    .hero-cta,
+    .chips,
+    .card-actions,
+    .stats,
+    .meta-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .hero-side{
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(252,251,247,.92) 100%);
+    }
+
+    .side-stat,
+    .mini-item,
+    .prompt-item{
+      padding:18px;
+      border-radius:20px;
+      background:rgba(248,246,241,.8);
+      border:1px solid var(--line);
+    }
+
+    .side-stat strong{
+      display:block;
+      font-size:2rem;
+      letter-spacing:-.05em;
+      margin-bottom:6px;
+    }
+
+    .mini-list,
+    .prompt-list,
+    .steps{
+      display:grid;
+      gap:14px;
+    }
+
+    .mini-item-title{
+      font-weight:600;
+      margin-bottom:6px;
+      letter-spacing:-.02em;
+    }
+
+    .section{
+      padding:18px 0 22px;
+    }
+
+    .section-anchor{
+      margin-bottom:16px;
+    }
+
+    .section-title{
+      font-size:clamp(1.7rem, 2vw, 2.25rem);
+      letter-spacing:-.045em;
+      margin:0;
+    }
+
+    .section-subtitle{
+      margin:6px 0 0;
+      color:var(--muted);
+      max-width:58ch;
+    }
+
+    .chip,
+    .tag{
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--chip);
+      border:1px solid var(--line);
+      color:#444;
+      font-size:.92rem;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .tag{
+      padding:7px 11px;
+      font-size:.82rem;
+      background:var(--accent-soft);
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:18px;
+    }
+
+    .want-card{
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:var(--shadow-soft);
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .want-card:hover{
+      transform:translateY(-2px);
+      box-shadow:var(--shadow);
+    }
+
+    .want-card h3{
+      margin:0;
+      font-size:1.18rem;
+      line-height:1.2;
+      letter-spacing:-.03em;
+    }
+
+    .want-card p{
+      margin:0;
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .stats{
+      gap:14px;
+      font-size:.88rem;
+      color:var(--muted);
+    }
+
+    .card-actions{
+      margin-top:auto;
+    }
+
+    .card-btn{
+      padding:10px 13px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:.9rem;
+      cursor:pointer;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:.95fr 1.05fr;
+      gap:18px;
+      padding:22px 0 38px;
+    }
+
+    .section-card{
+      padding:26px;
+    }
+
+    .step{
+      display:grid;
+      grid-template-columns:40px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    .step-num{
+      width:40px;
+      height:40px;
+      border-radius:14px;
+      background:var(--text);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-weight:700;
+    }
+
+    .cta-band{
+      margin:10px 0 48px;
+      padding:28px;
+      border-radius:28px;
+      background:linear-gradient(135deg, #111 0%, #222 100%);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+      box-shadow:0 20px 46px rgba(17,17,17,.16);
+    }
+
+    .cta-band h2{
+      margin:0 0 8px;
+      font-size:clamp(1.6rem, 2.5vw, 2.4rem);
+      letter-spacing:-.04em;
+    }
+
+    .cta-band p{
+      margin:0;
+      color:rgba(255,255,255,.76);
+      max-width:56ch;
+    }
+
+    footer{
+      border-top:1px solid var(--line);
+      padding:22px 0 42px;
+      color:var(--muted);
+    }
+
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .footer-links{
+      display:flex;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+
+    @media (max-width:1080px){
+      .hero-grid,
+      .cards,
+      .two-col{
+        grid-template-columns:1fr;
+      }
+
+      h1{max-width:14ch}
+    }
+
+    @media (max-width:760px){
+      .nav{flex-wrap:wrap}
+      .nav-links{
+        width:100%;
+        order:3;
+        overflow-x:auto;
+        padding-bottom:2px;
+      }
+      .hero{padding-top:42px}
+      .hero-main,
+      .hero-side,
+      .section-card,
+      .want-card{
+        border-radius:22px;
+      }
+      .hero-main,
+      .hero-side,
+      .section-card{
+        padding:22px;
+      }
+      .section-head,
+      .input-footer{
+        align-items:start;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>What I Want</h1>
-    <p>A place where people say what they really want.</p>
+  <div class="topbar">
+    <div class="container nav">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">W</span>
+        <span>What I Want</span>
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="#home">Home</a>
+        <a class="nav-link" href="#trending">Trending</a>
+        <a class="nav-link" href="#categories">Categories</a>
+        <a class="nav-link" href="#how-it-works">How it works</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary">Log in</button>
+        <button class="btn btn-primary">Post a want</button>
+      </div>
+    </div>
   </div>
+
+  <main>
+    <section class="hero container" id="home">
+      <div class="hero-grid">
+        <div class="hero-main">
+          <div class="eyebrow">Public wall for unmet needs</div>
+          <span class="hero-badge">Startup-ready prototype</span>
+
+          <h1>What do you really want?</h1>
+
+          <p class="hero-text">
+            Post a need, idea, frustration, or wish. Find people who want the same thing.
+            If enough people care, someone may build it.
+          </p>
+
+          <div class="hero-stats">
+            <span class="hero-stat-pill">12.4k wants posted</span>
+            <span class="hero-stat-pill">4.8k active supporters</span>
+            <span class="hero-stat-pill">620 builder responses</span>
+          </div>
+
+          <div class="input-panel">
+            <div class="input-label">Start with one sentence</div>
+            <textarea class="want-input" placeholder="I want a simple tool that..."></textarea>
+
+            <div class="input-footer">
+              <div class="helper-text">
+                Examples: a product idea, an unmet need, a daily frustration, or something you wish existed.
+              </div>
+              <div class="hero-cta">
+                <button class="btn btn-primary">Post your want</button>
+                <button class="btn btn-secondary">Explore wants</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-side">
+          <div class="side-stat">
+            <strong>12,480</strong>
+            <div class="muted">
+              wants posted across products, lifestyle, education, local problems, and ideas people wish existed.
+            </div>
+          </div>
+
+          <div class="mini-list">
+            <div class="mini-item">
+              <div class="mini-item-title">People support ideas fast</div>
+              <div class="muted">
+                Each post can collect “I want this too” signals, comments, and people willing to build it.
+              </div>
+            </div>
+
+            <div class="mini-item">
+              <div class="mini-item-title">Better than a random thought dump</div>
+              <div class="muted">
+                Structure each post around what you want, why it matters, and who else may need it.
+              </div>
+            </div>
+
+            <div class="mini-item">
+              <div class="mini-item-title">Useful for founders too</div>
+              <div class="muted">
+                Turn repeated wishes and frustrations into real product validation.
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section container" id="categories">
+      <div class="section-anchor">Demand signals by theme</div>
+
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Browse by category</h2>
+          <p class="section-subtitle">
+            Explore wants by theme and discover where demand is building up.
+          </p>
+        </div>
+      </div>
+
+      <div class="chips">
+        <span class="chip">Tech</span>
+        <span class="chip">Lifestyle</span>
+        <span class="chip">Education</span>
+        <span class="chip">Health</span>
+        <span class="chip">Money</span>
+        <span class="chip">Faith</span>
+        <span class="chip">Travel</span>
+        <span class="chip">Local Problems</span>
+        <span class="chip">Work</span>
+        <span class="chip">Random Ideas</span>
+      </div>
+    </section>
+
+    <section class="section container" id="trending">
+      <div class="section-anchor">Most supported right now</div>
+
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Trending wants</h2>
+          <p class="section-subtitle">
+            The most supported ideas, unmet needs, and daily frustrations people are talking about right now.
+          </p>
+        </div>
+      </div>
+
+      <div class="cards">
+        <article class="want-card">
+          <div class="meta-row">
+            <span class="tag">Productivity</span>
+            <span class="tag">Privacy</span>
+          </div>
+          <h3>I want a private habit app with no social pressure, streak shame, or noisy reminders</h3>
+          <p>Most habit tools feel stressful. I want something calmer, simpler, and more human.</p>
+          <div class="stats">
+            <span>132 people want this</span>
+            <span>18 comments</span>
+          </div>
+          <div class="card-actions">
+            <button class="card-btn">I want this too</button>
+            <button class="card-btn">Comment</button>
+            <button class="card-btn">Save</button>
+          </div>
+        </article>
+
+        <article class="want-card">
+          <div class="meta-row">
+            <span class="tag">Travel</span>
+            <span class="tag">Lifestyle</span>
+          </div>
+          <h3>I want a simple halal food finder for small towns, not just major cities</h3>
+          <p>Most apps work in big cities only. Travelers in smaller places still need something reliable.</p>
+          <div class="stats">
+            <span>84 people want this</span>
+            <span>9 comments</span>
+          </div>
+          <div class="card-actions">
+            <button class="card-btn">I want this too</button>
+            <button class="card-btn">Comment</button>
+            <button class="card-btn">Save</button>
+          </div>
+        </article>
+
+        <article class="want-card">
+          <div class="meta-row">
+            <span class="tag">Education</span>
+            <span class="tag">AI Tools</span>
+          </div>
+          <h3>I want an AI tutor that explains things like a patient human, not a textbook</h3>
+          <p>It should adapt to different levels, explain slowly, and avoid sounding robotic or rushed.</p>
+          <div class="stats">
+            <span>219 people want this</span>
+            <span>31 comments</span>
+          </div>
+          <div class="card-actions">
+            <button class="card-btn">I want this too</button>
+            <button class="card-btn">Comment</button>
+            <button class="card-btn">Save</button>
+          </div>
+        </article>
+
+        <article class="want-card">
+          <div class="meta-row">
+            <span class="tag">Money</span>
+            <span class="tag">Freelance</span>
+          </div>
+          <h3>I want an easier way for freelancers to receive global payments with less friction</h3>
+          <p>Too many tools have country restrictions, high fees, or complicated setup requirements.</p>
+          <div class="stats">
+            <span>167 people want this</span>
+            <span>24 comments</span>
+          </div>
+          <div class="card-actions">
+            <button class="card-btn">I want this too</button>
+            <button class="card-btn">Comment</button>
+            <button class="card-btn">Save</button>
+          </div>
+        </article>
+
+        <article class="want-card">
+          <div class="meta-row">
+            <span class="tag">Work</span>
+            <span class="tag">Local Problems</span>
+          </div>
+          <h3>I want a cleaner way to discover reliable small manufacturers without endless searching</h3>
+          <p>Directories are messy. Search results are scattered. The process still feels too manual.</p>
+          <div class="stats">
+            <span>73 people want this</span>
+            <span>12 comments</span>
+          </div>
+          <div class="card-actions">
+            <button class="card-btn">I want this too</button>
+            <button class="card-btn">Comment</button>
+            <button class="card-btn">Save</button>
+          </div>
+        </article>
+
+        <article class="want-card">
+          <div class="meta-row">
+            <span class="tag">Random Ideas</span>
+            <span class="tag">Community</span>
+          </div>
+          <h3>I want a place where people post what they wish existed, and builders can actually respond</h3>
+          <p>Not a forum full of noise. A simple public wall of real unmet wants, backed by real signals.</p>
+          <div class="stats">
+            <span>302 people want this</span>
+            <span>44 comments</span>
+          </div>
+          <div class="card-actions">
+            <button class="card-btn">I want this too</button>
+            <button class="card-btn">Comment</button>
+            <button class="card-btn">Save</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="container two-col" id="how-it-works">
+      <div class="section-card">
+        <div class="section-anchor">Why people come back</div>
+        <h2 class="section-title">Not sure what to post?</h2>
+        <p class="section-subtitle">
+          Good posts are clear, specific, and rooted in a real frustration or unmet need.
+        </p>
+
+        <div class="prompt-list">
+          <div class="prompt-item">I want something that makes ______ easier.</div>
+          <div class="prompt-item">Why doesn’t a simple tool exist for ______?</div>
+          <div class="prompt-item">I’m tired of using products that always ______.</div>
+          <div class="prompt-item">I wish there were a better way to ______.</div>
+          <div class="prompt-item">People like me need something that ______.</div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-anchor">How the product works</div>
+        <h2 class="section-title">From vague thought to visible demand</h2>
+        <p class="section-subtitle">A simple loop that turns private wishes into public signals.</p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <strong>Post your want</strong>
+              <div class="muted">Share a need, wish, frustration, or product idea in one clear sentence.</div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <strong>See who agrees</strong>
+              <div class="muted">Other people can support it with “I want this too”, comments, saves, and examples.</div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <strong>Turn demand into action</strong>
+              <div class="muted">Founders, developers, and teams can discover repeated needs and start building around them.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="cta-band">
+        <div>
+          <h2>Say what you want. See who agrees.</h2>
+          <p>
+            A public wall for unmet needs, product ideas, daily frustrations, and wishes people actually care about.
+          </p>
+        </div>
+        <div class="hero-cta">
+          <button class="btn btn-primary">Post your want</button>
+          <button class="btn btn-secondary">Explore ideas</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>© 2026 What I Want</div>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">How it works</a>
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
